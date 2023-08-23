@@ -10,23 +10,40 @@
 
 int _printf(const char *format, ...)
 {
+	char token[1000];
+	int k = 0;
 	int i;
-	char *check;
 	va_list list;
 
 	va_start(list, format);
 
 	for (i = 0; format[i] != '\0'; i++)
 	{
-		if (format[i] == 'c')
+		token[k++] = format[i];
+		if (format[i + 1] == '%' || format[i + 1] == '\0')
 		{
-			check = va_arg(list, int);
-			fprintf(stdout, format, check);
-		}
-		if (format[i] == 's')
-		{
-			check = va_arg(list, char*);
-			fprintf(stdout, format, check);
+			token[k] = '\0';
+			k = 0;
+
+			if (token[0] != '%')
+			{
+				fprintf(stdout, "%s", token);
+			}
+			else
+			{
+				int j = 1;
+				char ch1 = 0;
+
+				while ((ch1 = token[j++] < 58))
+				if (ch1 == 'i' || ch1 == 'd')
+					fprintf(stdout, token, va_arg(list, int));
+				else if (ch1 == 'c')
+					fprintf(stdout, token, va_arg(list, int));
+				else if (ch1 == 's')
+					fprintf(stdout, token, va_arg(list, char*));
+				else
+					fprintf(stdout, "%s", token);
+			}
 		}
 	}
 	va_end(list);
